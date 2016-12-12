@@ -68,6 +68,18 @@ fun! CompleteSymfony(findstart, base)
         return res
 endfun
 
+fun! FindService(name)
+    let shellcmd = g:symfony_app_console_caller. ' '.g:symfony_app_console_path.' debug:container ' .a:name
+    let output = system(shellcmd)
+    echo output
+endfun
+
+fun! FindRoute(name)
+    let shellcmd = g:symfony_app_console_caller. ' '.g:symfony_app_console_path.' debug:router ' .a:name
+    let output = system(shellcmd)
+    echo output
+endfun
+
 " activate completefunc only in twig, php, xml and yaml buffers
 let oldcompletefunc = &completefunc
 
@@ -82,6 +94,8 @@ au BufLeave *.php    setlocal completefunc=oldcompletefunc
 au BufLeave *.yml    setlocal completefunc=oldcompletefunc
 au BufLeave *.xml    setlocal completefunc=oldcompletefunc
 
+map <leader>s yi' :call FindService(@")<CR>
+map <leader>r yi' :call FindRoute(@")<CR>
 
 " Open console
 let g:symfony_enable_shell_cmd = g:symfony_app_console_caller." ".g:symfony_app_console_path." -s"
