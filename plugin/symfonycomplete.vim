@@ -1,3 +1,4 @@
+let s:current_file=expand('<sfile>:p:h')
 if !exists("g:symfony_app_console_path")
     let g:symfony_app_console_path = "app/console"
 endif
@@ -74,6 +75,18 @@ fun! FindService(name)
     echo output
 endfun
 
+fun! GoToService(name)
+    echo "TODO: check alias"
+    let shellcmd = g:symfony_app_console_caller. ' '.g:symfony_app_console_path.' debug:container ' .a:name . " | grep Class | awk '{print $2}'"
+    let classname = substitute(system(shellcmd), '\n\+$', '', '')
+    let s:reflect_path = s:current_file . '/../reflect.php'
+    let s:autoload_path= expand('<sfile>:p:h') . '/app/autoload.php'
+    let reflect_command = 'php ' . s:reflect_path . ' '. s:autoload_path .' ' .'"'.classname.'"'
+    let dude = system(reflect_command)
+    echo dude
+    exe "tabnew" dude
+endfun
+
 fun! FindRoute(name)
     let shellcmd = g:symfony_app_console_caller. ' '.g:symfony_app_console_path.' debug:router ' .a:name
     let output = system(shellcmd)
@@ -94,6 +107,7 @@ au BufLeave *.php    setlocal completefunc=oldcompletefunc
 au BufLeave *.yml    setlocal completefunc=oldcompletefunc
 au BufLeave *.xml    setlocal completefunc=oldcompletefunc
 
+map <leader>t yi' :call GoToService(@")<CR>
 map <leader>s yi' :call FindService(@")<CR>
 map <leader>r yi' :call FindRoute(@")<CR>
 
